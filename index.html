@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Projeto de extensão sobre segurança e privacidade em aplicativos: riscos, caso prático, desafio, quiz, checklist e infográfico.">
+<title>App Seguro na Mão</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Nunito+Sans:ital,wght@0,400;0,700;0,800;1,400&display=swap">
+<style>
+/* Layout: estilo do infográfico — fundo azul-claro, cartões brancos por seção com selo numerado laranja, painéis azuis/navy para destaques. Visual único (claro), deliberado. */
+:root{
+  --bg:#8FD3E6; --bg-deep:#6BBCD3; --surface:#FFFFFF; --ink:#16324F; --muted:#3F5A73; --line:#BFE3EE;
+  --brand:#1F7FA3; --brand-ink:#FFFFFF; --brand-soft:#DFF3F9; --navy:#16324F;
+  --orange:#F26B21; --alert:#C2410C; --alert-soft:#FFE9DC; --peach:#FFB27A;
+  --bubble-in:#FFFFFF; --chatbg:#DFF3F9;
+  --display:"Oswald", "Arial Narrow", Impact, sans-serif;
+  --body:"Nunito Sans", Verdana, system-ui, sans-serif;
+  --mono:"Oswald", "Arial Narrow", sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:1.0625rem;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));counter-reset:sec}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0;text-transform:uppercase;letter-spacing:.02em}
+h2{font-size:clamp(1.7rem,4.2vw,2.3rem);font-weight:700;color:var(--alert)}
+h3{font-size:1.2rem;font-weight:500;color:var(--ink)}
+p{margin:0}
+a{color:var(--brand)}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--orange);outline-offset:2px;border-radius:6px}
+.wrap{max-width:52rem;margin:0 auto}
+.eyebrow{font-family:var(--display);font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);font-weight:500}
+.muted{color:var(--muted)}
+
+/* Hero = banner branco do infográfico */
+.hero{max-width:64rem;margin:1.5rem auto 0;background:var(--surface);border-radius:6px;box-shadow:0 6px 0 var(--bg-deep);
+  padding:2rem clamp(1rem,4vw,2.5rem);display:grid;grid-template-columns:1.25fr .75fr;gap:2rem;align-items:center}
+.hero h1{font-size:clamp(2.1rem,5.4vw,3.6rem);font-weight:700;color:var(--ink);letter-spacing:.01em}
+.hero h1 em{font-style:normal;color:var(--orange)}
+.hero .tagline{margin-top:.6rem;font-family:var(--display);font-size:clamp(1rem,2.4vw,1.35rem);letter-spacing:.12em;text-transform:uppercase;color:var(--alert)}
+.hero .lede{margin-top:1rem;font-size:1.1rem;max-width:34rem;color:var(--muted)}
+.facts{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.4rem}
+.facts div{display:flex;flex-direction:column;background:var(--brand);color:#fff;border-radius:6px;padding:.7rem .9rem;flex:1 1 9rem}
+.facts b{font-family:var(--display);font-size:1.8rem;line-height:1.1;color:var(--peach);font-variant-numeric:tabular-nums}
+.facts span{font-size:.85rem;line-height:1.3}
+.facts small{flex-basis:100%;font-size:.78rem;color:var(--muted)}
+.phone{justify-self:center;position:relative;width:min(100%,16rem);aspect-ratio:9/17;max-width:100%;border:10px solid var(--navy);border-radius:2rem;background:var(--chatbg);display:flex;flex-direction:column;overflow:hidden}
+.phone .top{background:var(--navy);color:#fff;padding:.7rem .9rem;display:flex;gap:.6rem;align-items:center}
+.avatar{width:2rem;height:2rem;border-radius:50%;background:var(--orange);display:grid;place-items:center;font-weight:800;color:#fff;font-size:.85rem;flex:none}
+.phone .top b{font-size:.85rem;display:block;line-height:1.2}
+.phone .top span{font-size:.7rem;opacity:.8}
+.phone .msgs{padding:.8rem;display:flex;flex-direction:column;gap:.5rem;font-size:.82rem;line-height:1.35}
+.bub{background:var(--bubble-in);padding:.45rem .6rem;border-radius:.7rem .7rem .7rem .2rem;max-width:88%;box-shadow:0 1px 0 var(--line)}
+.bub time{display:block;text-align:right;font-family:var(--display);font-size:.65rem;color:var(--muted)}
+.bub.flag{outline:2px dashed var(--alert);outline-offset:2px}
+.warn{position:absolute;right:.5rem;bottom:.6rem;width:3.2rem;height:3.2rem}
+
+/* Nav */
+nav.steps{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);margin-top:1.5rem;margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)))}
+nav.steps .scroller{display:flex;gap:.45rem;overflow-x:auto;padding:.6rem max(16px,env(safe-area-inset-left,0px));max-width:64rem;margin:0 auto;scrollbar-width:none}
+nav.steps button{flex:none;border:0;cursor:pointer;color:var(--ink);font-family:var(--display);text-transform:uppercase;letter-spacing:.05em;font-size:.88rem;padding:.35rem .85rem;border-radius:4px;background:var(--surface)}
+nav.steps button span{display:inline-grid;place-items:center;width:1.4rem;height:1.4rem;border-radius:50%;background:var(--orange);color:#fff;margin-right:.45rem;font-size:.78rem}
+nav.steps button:hover{background:var(--brand-soft)}
+nav.steps button[aria-selected="true"]{background:var(--navy);color:#fff}
+nav.steps button[aria-selected="true"]:hover{background:var(--navy)}
+
+/* Cada seção é um cartão branco com selo numerado */
+section{padding-block:1.25rem;scroll-margin-top:3.5rem}
+section > .wrap{background:var(--surface);border-radius:6px;padding:clamp(1.2rem,4vw,2.2rem);display:flex;flex-direction:column;gap:1.25rem}
+.head{display:grid;grid-template-columns:auto 1fr;column-gap:.9rem;row-gap:.35rem;align-items:center}
+.head::before{content:attr(data-n);grid-row:1 / span 2;align-self:start;width:3rem;height:3rem;border-radius:50%;background:var(--orange);color:#fff;font-family:var(--display);font-weight:700;font-size:1.6rem;display:grid;place-items:center}
+.head > *{grid-column:2}
+.head > p:not(.eyebrow){grid-column:1 / -1;margin-top:.4rem}
+#socorro{counter-increment:none}
+#socorro > .wrap{background:var(--navy);color:#fff}
+#socorro h2{color:var(--peach)}
+#socorro .eyebrow{color:var(--peach)}
+#socorro .muted{color:#C9D8E6}
+
+/* Vídeo */
+.scenes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border-left:3px solid var(--line);margin-left:.4rem}
+.scene{position:relative;padding:0 0 1.4rem 1.4rem}
+.scene::before{content:"";position:absolute;left:-.6rem;top:.3rem;width:1rem;height:1rem;border-radius:50%;background:var(--orange)}
+.scene .t{font-family:var(--display);font-size:.95rem;color:var(--brand);letter-spacing:.05em}
+.scene .img{font-size:.92rem;color:var(--muted);margin-top:.3rem}
+.scene blockquote{margin:.5rem 0 0;padding:.8rem 1rem;background:var(--brand-soft);border-radius:6px;font-size:.98rem}
+
+.video-slot{aspect-ratio:16/9;max-width:100%;width:100%;background:var(--navy);color:#fff;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8rem;text-align:center;padding:1rem}
+.video-slot svg{width:clamp(3.5rem,10vw,5rem);height:auto}
+.vs-title{font-family:var(--display);text-transform:uppercase;letter-spacing:.08em;font-size:clamp(1.1rem,3vw,1.5rem)}
+
+/* Riscos */
+.golpes{display:flex;flex-direction:column;gap:.8rem}
+details.golpe{background:var(--surface);border:2px solid var(--line);border-radius:6px;padding:0}
+details.golpe[open]{border-color:var(--brand)}
+details.golpe summary{list-style:none;cursor:pointer;padding:.9rem 1.1rem;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+details.golpe summary::-webkit-details-marker{display:none}
+details.golpe summary::after{content:"+";font-family:var(--display);font-size:1.5rem;color:var(--orange);line-height:1}
+details.golpe[open] summary::after{content:"−"}
+.golpe .body{padding:0 1.1rem 1.1rem;display:flex;flex-direction:column;gap:.7rem}
+.tag{font-family:var(--display);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:.15rem}
+.alertbox{background:var(--alert-soft);border-radius:6px;padding:.7rem .9rem}
+.alertbox .tag{color:var(--alert)}
+.okbox{background:var(--brand);color:#fff;border-radius:6px;padding:.7rem .9rem}
+.okbox .tag{color:var(--peach)}
+.rule{font-family:var(--display);text-transform:uppercase;letter-spacing:.03em;font-size:1.2rem;padding:1rem 1.2rem;background:var(--navy);color:#fff;border-radius:6px}
+
+/* Caso */
+.chat{background:var(--chatbg);border-radius:6px;padding:1rem;display:flex;flex-direction:column;gap:.55rem}
+.chat .bub{font-size:.98rem;max-width:min(92%,30rem)}
+.btn{background:var(--orange);color:#fff;border:0;border-radius:4px;padding:.65rem 1.2rem;font-family:var(--display);text-transform:uppercase;letter-spacing:.06em;font-size:1rem}
+.btn:hover{background:var(--alert)}
+.btn.ghost{background:transparent;color:var(--navy);border:2px solid var(--navy)}
+.btn.ghost:hover{background:var(--navy);color:#fff}
+.qs{margin:0;padding-left:1.3rem;display:flex;flex-direction:column;gap:.3rem}
+.analysis{display:flex;flex-direction:column}
+.analysis div{display:grid;grid-template-columns:12rem 1fr;gap:1rem;padding:.7rem 0;border-top:1px solid var(--line)}
+.analysis b{color:var(--alert)}
+#caseAnswer .okbox .qs{color:#fff}
+
+/* Desafio */
+.sms{background:var(--brand-soft);border-radius:6px;padding:1.1rem;font-size:1.05rem;line-height:2.1}
+.sms .from{font-family:var(--display);text-transform:uppercase;letter-spacing:.06em;font-size:.82rem;color:var(--brand);display:block;line-height:1.4;margin-bottom:.4rem}
+.piece{border:0;background:var(--surface);color:var(--ink);padding:.15rem .4rem;border-radius:4px;border-bottom:2px dotted var(--muted);text-align:left;line-height:1.5}
+.piece:hover{background:#fff7f1}
+.piece[aria-pressed="true"]{background:var(--alert-soft);border-bottom-color:var(--alert)}
+.piece.right{background:var(--alert-soft);border-bottom:2px solid var(--alert)}
+.piece.miss{outline:2px dashed var(--alert)}
+.piece.wrong{text-decoration:line-through}
+.bar{display:flex;flex-wrap:wrap;gap:.8rem;align-items:center}
+.counter{font-family:var(--display);letter-spacing:.04em;font-size:1rem}
+.feedback{display:flex;flex-direction:column;gap:.5rem}
+.feedback p{padding:.6rem .8rem;border-radius:6px;background:var(--brand-soft);font-size:.95rem}
+.feedback p b{font-family:var(--display);margin-right:.4rem}
+
+/* Quiz */
+.quiz{background:var(--navy);color:#fff;border-radius:6px;padding:1.3rem;display:flex;flex-direction:column;gap:1rem}
+.quiz h3{color:#fff}
+.quiz .eyebrow{color:var(--peach)}
+.quiz .prog{display:flex;gap:.3rem}
+.quiz .prog i{flex:1;height:.4rem;border-radius:999px;background:#3F5A73}
+.quiz .prog i.done{background:var(--peach)}
+.quiz .prog i.bad{background:var(--orange)}
+.opts{display:flex;flex-direction:column;gap:.5rem}
+.opt{text-align:left;background:var(--surface);border:2px solid transparent;border-radius:6px;padding:.7rem .9rem;color:var(--ink)}
+.opt:hover:not(:disabled){border-color:var(--peach)}
+.opt.ok{border-color:#2E9E52;background:#E3F5E9}
+.opt.no{border-color:var(--alert);background:var(--alert-soft)}
+.opt:disabled{cursor:default}
+.explain{padding:.7rem .9rem;border-radius:6px;background:#22446A;font-size:.97rem}
+.score{font-family:var(--display);font-size:3rem;font-weight:700;color:var(--peach);font-variant-numeric:tabular-nums}
+.quiz .btn.ghost{color:#fff;border-color:#fff}
+
+/* Checklist */
+.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.45rem}
+.checks label{display:flex;gap:.8rem;align-items:flex-start;padding:.75rem .9rem;background:var(--brand-soft);border-radius:6px;cursor:pointer}
+.checks input{width:1.3rem;height:1.3rem;accent-color:var(--orange);flex:none;margin-top:.15rem}
+.checks input:checked + span{color:var(--muted)}
+.meter{height:.7rem;background:var(--line);border-radius:999px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--orange);width:0;transition:width .3s}
+.verdict{font-weight:800}
+
+/* Infográfico (mesmo estilo do arquivo para download) */
+.info{background:var(--bg);border-radius:6px;padding:1rem;display:flex;flex-direction:column;gap:.9rem}
+.info .ih{background:var(--surface);border-radius:6px;padding:1.1rem 1.3rem;text-align:center;box-shadow:0 4px 0 var(--bg-deep)}
+.info .ih h3{font-size:clamp(1.3rem,3.5vw,1.9rem);font-weight:700;color:var(--ink)}
+.info .ih .eyebrow{color:var(--alert)}
+.info .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem}
+.info .grid > div{background:var(--brand);color:#fff;border-radius:6px;padding:.9rem}
+.info .num{font-family:var(--display);font-size:1.8rem;font-weight:700;color:var(--peach)}
+.info .row{background:var(--surface);border-radius:6px;padding:1rem 1.2rem;display:flex;flex-direction:column;gap:.6rem}
+.info .row > b{font-family:var(--display);text-transform:uppercase;letter-spacing:.04em;color:var(--alert);font-size:1.15rem;font-weight:700}
+.pcp{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem}
+.pcp div{background:var(--navy);color:#fff;border-radius:6px;padding:.8rem}
+.pcp b{font-family:var(--display);text-transform:uppercase;font-size:1.2rem;color:var(--peach);display:block}
+.mini{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.25rem;font-size:.95rem}
+
+/* Socorro / rodapé */
+.help{margin:0;padding-left:1.4rem;display:flex;flex-direction:column;gap:.6rem}
+.sources{margin:0;padding-left:1.2rem;font-size:.9rem;display:flex;flex-direction:column;gap:.5rem;overflow-wrap:anywhere}
+footer{padding-block:1.25rem 3rem}
+footer .wrap{background:var(--surface);border-radius:6px;padding:clamp(1.2rem,4vw,2.2rem)}
+footer h3{color:var(--alert);font-weight:700}
+.idgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.4rem 1.5rem;font-size:.92rem}
+.idgrid span{color:var(--muted)}
+
+@media (max-width:760px){
+  .hero{grid-template-columns:1fr}
+  .phone{width:14.5rem}
+  .analysis div{grid-template-columns:1fr;gap:.2rem}
+  .info .grid,.pcp{grid-template-columns:1fr}
+  .idgrid{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+</style>
+
+</head>
+<body>
+<header class="hero">
+  <div>
+    <h1>Apps seguros: <em>cuidado com quem você deixa entrar</em></h1>
+    <p class="tagline">Baixe certo · Permita pouco · Proteja a conta</p>
+    <p class="lede">Aprenda a reconhecer apps falsos, permissões abusivas e pedidos de código, proteja suas contas e conheça seus direitos sobre seus dados pessoais.</p>
+    <div class="facts" id="facts"></div>
+  </div>
+  <div class="phone" aria-label="Exemplo de mensagem de golpe no WhatsApp">
+    <div class="top"><div class="avatar">C</div><div><b>Cida (Igreja)</b><span>online</span></div></div>
+    <div class="msgs">
+      <div class="bub">Desculpa, mandei um código pro seu celular sem querer 🙈<time>19:13</time></div>
+      <div class="bub flag">Chegou um SMS com 6 números? Pode me mandar?<time>19:13</time></div>
+      <div class="bub">Rapidinho, expira em 5 minutos! 🙏<time>19:15</time></div>
+    </div>
+    <svg class="warn" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 3 L38 35 L2 35 Z" fill="#F26B21"></path><rect x="18" y="14" width="4" height="12" rx="2" fill="#FFFFFF"></rect><circle cx="20" cy="30" r="2.4" fill="#FFFFFF"></circle></svg>
+  </div>
+</header>
+
+
+<nav class="steps" aria-label="Seções"><div class="scroller" id="nav" role="tablist"></div></nav>
+
+<main id="main"></main>
+
+<footer><div class="wrap" id="foot"></div></footer>
+
+<script>
+const C = {"titulo":"Segurança em Aplicativos: como usar apps sem expor sua conta e seus dados","subtitulo":"Projeto de Extensão — material educativo para a comunidade","identificacao":[["Aluna","Giulia Néias Cavalheri"],["RA","10746143"],["Curso","Ciência da Computação"],["Instituição","Universidade Presbiteriana Mackenzie — campus Alphaville"],["Local e ano","Barueri, 2026"]],"apresentacao":["O celular virou carteira, documento, agenda e álbum de família. Cada aplicativo instalado pode ter acesso a uma parte dessa vida: contatos, fotos, localização, mensagens e contas bancárias. Por isso, um app falso, uma permissão concedida sem pensar ou uma senha repetida podem abrir a porta para golpes e para o vazamento de dados pessoais.","Os números mostram o tamanho do problema. Em 2024, a Federação Brasileira de Bancos (Febraban) registrou cerca de 153 mil reclamações do golpe do WhatsApp, em que a conta do aplicativo é clonada ou imitada, e 105 mil do golpe da falsa central, que muitas vezes termina com a vítima instalando um app de acesso remoto. Em 2026, o Idec e a imprensa alertaram para aplicativos falsos que imitam bancos, Correios e até o INSS e, depois de instalados, pedem a permissão de acessibilidade para controlar o celular.","Este projeto de extensão tem dois focos: o uso seguro de aplicativos (de onde baixar, quais permissões dar, como proteger as contas) e a privacidade (o que os apps coletam e quais são os seus direitos pela Lei Geral de Proteção de Dados, a LGPD). O material é dividido em sete partes: um vídeo curto, um texto explicativo, um caso prático, um desafio, um quiz, um checklist e um infográfico para download."],"objetivos":["Explicar, em linguagem simples, os principais riscos de segurança e privacidade no uso de aplicativos.","Ensinar a reconhecer apps falsos, permissões abusivas e mensagens que tentam roubar contas.","Oferecer ferramentas práticas (checklist e infográfico) para usar antes e depois de instalar um app.","Apresentar os direitos do usuário sobre seus dados pessoais, segundo a LGPD, e o que fazer em caso de problema."],"publico":"Comunidade em geral: qualquer pessoa que usa aplicativos no celular, com atenção especial a quem tem menos familiaridade com configurações de segurança, como idosos, e a pais e responsáveis que acompanham o uso do celular pelos filhos.","video":{"titulo":"Como um app falso rouba seus dados","duracao":"5 minutos","formato":"Vídeo vertical (9:16) para redes sociais ou horizontal (16:9) para apresentação. Pode ser gravado no celular, com narração, gravação de tela e encenação simples.","cenas":[{"tempo":"0:00 – 0:30","titulo":"Abertura: o gancho","imagem":"Close no celular. Chega um SMS: \"Seu reembolso está disponível. Baixe o app oficial e confirme seus dados: [link]\".","fala":"Uma mensagem como essa chega a milhares de brasileiros todos os dias. Parece oficial, promete dinheiro e traz um link para baixar um aplicativo. Em poucos minutos, esse app pode ver tudo o que você faz no celular. Hoje você vai entender como isso acontece, e como se proteger."},{"tempo":"0:30 – 1:15","titulo":"Seu celular é a sua vida","imagem":"Ícones aparecendo na tela: banco, WhatsApp, fotos, e-mail, localização, documentos.","fala":"Pense no que está no seu celular: conversas, fotos, contatos, localização, e-mail, banco. Cada app que você instala pode pedir acesso a uma parte disso. A maioria usa esse acesso para funcionar. Mas um app falso usa para espionar, roubar senhas e até mexer na sua conta bancária."},{"tempo":"1:15 – 2:30","titulo":"Anatomia do golpe: as 4 etapas","imagem":"Gravação de tela encenada, com letreiro para cada etapa: 1. Isca → 2. Instalação → 3. Permissões → 4. Controle.","fala":"O golpe tem quatro etapas. Um: a isca, uma mensagem ou anúncio prometendo reembolso, prêmio ou atualização urgente. Dois: a instalação fora da loja oficial, por um link ou arquivo enviado na conversa. Três: as permissões. O app pede acesso a SMS, contatos e, principalmente, à acessibilidade, uma permissão que deixa o app ver a tela e tocar nela no seu lugar. Quatro: o controle. Com isso, o criminoso lê seus códigos, captura senhas e pode até alterar transferências sem você perceber."},{"tempo":"2:30 – 3:30","titulo":"Outros jeitos de invadir sua conta","imagem":"Cortes rápidos: \"Me passa o código que chegou por SMS?\" • Senha 123456 • \"Instale este app para o suporte te ajudar\" • App de lanterna pedindo seus contatos.","fala":"Nem sempre o golpe precisa de um app falso. Às vezes alguém pede o código de seis dígitos que chegou por SMS e clona o seu WhatsApp. Às vezes a sua senha é a mesma em vários apps e vaza de um deles. Às vezes um falso atendente pede para você instalar um app de acesso remoto. E às vezes o app é real, mas coleta muito mais dados do que precisa, como uma lanterna que quer ler seus contatos."},{"tempo":"3:30 – 4:30","titulo":"Como se proteger: Baixe certo, Permita pouco, Proteja a conta","imagem":"Três cartões aparecem na tela, um de cada vez.","fala":"Grave três regras. Baixe certo: só pela loja oficial do celular, nunca por link de mensagem, e confira quem é o desenvolvedor. Permita pouco: cada permissão precisa fazer sentido para o que o app faz, e acessibilidade só para quem realmente precisa. Proteja a conta: senha diferente em cada app, verificação em duas etapas ligada e celular sempre atualizado."},{"tempo":"4:30 – 5:00","titulo":"Instalei um app suspeito. E agora?","imagem":"Lista na tela: 1. Desinstale 2. Troque as senhas 3. Avise o banco 4. Avise os contatos. Encerramento com o nome do projeto.","fala":"Se acontecer, aja rápido. Desinstale o app e faça uma verificação de segurança no celular. Troque suas senhas usando outro aparelho, avise o banco se o app teve acesso à tela e avise seus contatos. E lembre: pela LGPD, você tem direito de saber quais dados um app tem sobre você. Compartilhe este vídeo. Informação é a melhor proteção."}],"dicas":["Grave em local silencioso e com boa luz; use a gravação de tela do próprio celular para mostrar as configurações.","Coloque legendas em todas as falas, porque muita gente assiste sem som.","Use dados fictícios em todas as telas encenadas: nomes, números, links e apps inventados.","Nunca mostre um link real de golpe nem um app malicioso de verdade; encene com imagens editadas.","Ferramentas gratuitas de edição: CapCut, Canva Vídeo ou o editor do próprio celular."]},"texto":{"titulo":"5 riscos em aplicativos que você precisa conhecer","intro":"A maioria dos aplicativos é segura e útil. Os problemas aparecem quando o app é falso, quando ele recebe mais acesso do que precisa ou quando a conta está mal protegida. Conheça os cinco riscos mais comuns, como identificar cada um e como se proteger.","golpes":[{"nome":"1. Aplicativos falsos","como":"Criminosos criam apps que imitam bancos, órgãos públicos, Correios ou aplicativos populares e divulgam por SMS, WhatsApp, anúncios ou sites que copiam a loja oficial. Em 2026, por exemplo, circulou um falso app \"INSS Reembolso\" que, depois de instalado, espionava aplicativos bancários e capturava senhas.","sinal":"Link para baixar o app fora da loja, arquivo .apk enviado na conversa, promessa de dinheiro ou urgência, desenvolvedor desconhecido.","protecao":"Instale apps só pela loja oficial do celular (Google Play ou App Store). Confira o nome do desenvolvedor, o número de downloads e as avaliações. Para serviços públicos, use os apps oficiais, como o Meu INSS e o gov.br."},{"nome":"2. Permissões demais","como":"Ao instalar ou usar um app, ele pede acesso a partes do celular: câmera, microfone, contatos, localização, SMS. A mais perigosa é a de acessibilidade, que permite ao app ver a tela e tocar nela no seu lugar. Golpistas usam essa permissão para ler códigos, capturar senhas e alterar transferências.","sinal":"A permissão não combina com a função do app, como um jogo pedindo histórico de chamadas ou uma lanterna pedindo seus contatos.","protecao":"Só permita o que faz sentido. Prefira a opção \"permitir só durante o uso\". Revise de tempos em tempos as permissões nas configurações do celular e retire o que não for necessário."},{"nome":"3. Contas mal protegidas","como":"Senhas fracas (como 123456 ou datas de aniversário) ou a mesma senha em vários apps facilitam a invasão: se um serviço vaza, todos os outros ficam expostos. Sem verificação em duas etapas, basta a senha ou um código de SMS para alguém entrar na conta. É assim que funciona a clonagem de WhatsApp, o golpe mais relatado aos bancos em 2024, segundo a Febraban.","sinal":"Alguém pede o código que chegou por SMS, aviso de login em aparelho desconhecido, senha repetida em vários apps.","protecao":"Use senhas longas e diferentes para cada app (um gerenciador de senhas ajuda). Ative a verificação em duas etapas no WhatsApp, no e-mail, nas redes sociais e no banco. Nunca compartilhe códigos de verificação."},{"nome":"4. Mensagens e links falsos (phishing)","como":"Mensagens que imitam empresas ou pessoas conhecidas levam a páginas falsas de login ou pedem para instalar algo. No golpe da falsa central, alguém se passa pelo banco ou por um suporte técnico e pede que a vítima instale um app de acesso remoto, que dá controle do celular ao criminoso.","sinal":"Pressa, ameaça de bloqueio, prêmio inesperado, link encurtado, pedido para instalar app de \"suporte\" ou \"segurança\".","protecao":"Não toque em links de mensagens inesperadas: abra o app ou digite o site você mesmo. Nenhum banco ou empresa séria pede para instalar app de acesso remoto. Na dúvida, ligue para o número oficial."},{"nome":"5. Seus dados expostos (privacidade)","como":"Mesmo apps verdadeiros podem coletar e compartilhar mais dados do que você imagina: localização em tempo real, contatos, hábitos de uso. Fotos e localização publicadas em redes sociais também revelam onde você mora, sua rotina e quem são seus filhos.","sinal":"App gratuito que pede muitos dados, cadastro que exige informações sem necessidade, localização sempre ligada.","protecao":"Antes de instalar, leia a seção \"Segurança dos dados\" (Google Play) ou \"Privacidade do app\" (App Store). Desligue a localização dos apps que não precisam dela. Lembre-se: pela LGPD, você pode pedir à empresa quais dados ela tem sobre você, corrigi-los e, em vários casos, pedir que sejam apagados."}],"fechamento":"Regra de ouro: app só da loja oficial, permissão só se fizer sentido, código e senha nunca se compartilham."},"caso":{"titulo":"Você recebe esta mensagem no WhatsApp...","contexto":"Seu Antônio, 63 anos, recebe mensagens de uma amiga da igreja, Cida. O número é o de sempre, com a foto dela.","mensagens":[{"hora":"19:12","texto":"Oi Antônio, boa noite! Tudo bem? 😊"},{"hora":"19:13","texto":"Desculpa incomodar, eu mandei um código pro seu celular sem querer, era pra mim 🙈"},{"hora":"19:13","texto":"Chegou aí um SMS com 6 números? Pode me mandar? É pra eu entrar no grupo da igreja"},{"hora":"19:15","texto":"Rapidinho por favor, o código expira em 5 minutos!"},{"hora":"19:16","texto":"Não precisa ligar não, tô sem crédito, só manda aqui 🙏"}],"perguntas":["Quais detalhes da conversa deveriam deixar Seu Antônio desconfiado?","O que o golpista consegue fazer com o código de 6 dígitos?","Se a mensagem vem do número verdadeiro da Cida, o que isso indica?"],"analise":[["Pedido de código por SMS","O código é a chave para registrar o WhatsApp de Seu Antônio em outro celular. Quem tem o código, tem a conta."],["Número verdadeiro da amiga","Indica que a conta da Cida já foi clonada. O golpista usa a confiança entre os dois."],["Pressa: \"expira em 5 minutos\"","A urgência é para Seu Antônio agir sem pensar."],["Desculpa pronta","\"Mandei sem querer\" e \"grupo da igreja\" tornam o pedido inofensivo."],["Pedido para não ligar","O golpista impede a atitude que desmascara o golpe: falar com a Cida de verdade."]],"conduta":["Nunca enviar o código: ele é pessoal e não serve para outra pessoa.","Ligar para a Cida por outro canal (ligação comum ou um parente dela) e avisar que a conta dela foi clonada.","Ativar a verificação em duas etapas no WhatsApp (Configurações > Conta > Confirmação em duas etapas).","Avisar o grupo da igreja para ninguém atender aos pedidos vindos do número da Cida."]},"desafio":{"titulo":"Desafio: esse aplicativo é confiável?","instrucao":"Você recebeu um link no WhatsApp para baixar um app de lanterna. Abaixo estão as informações da página do app. Marque os trechos que indicam risco. São 6 sinais escondidos. Atenção: há informações que parecem suspeitas, mas são normais para esse tipo de app.","trechos":[{"id":1,"texto":"Lanterna Super Brilho 2026 — grátis","sinal":false,"explicacao":"Ser gratuito, sozinho, não é problema. Muitos apps legítimos são gratuitos."},{"id":2,"texto":"Desenvolvedor: AppsTop Free (conta criada há 2 semanas)","sinal":true,"explicacao":"Desenvolvedor desconhecido e recente é sinal de alerta. Apps confiáveis têm histórico."},{"id":3,"texto":"Nota 4,9 com 300 avaliações iguais: \"Ótimo app!!!\"","sinal":true,"explicacao":"Avaliações repetidas e genéricas costumam ser falsas, compradas para dar confiança."},{"id":4,"texto":"Permissão: usar a câmera e o flash","sinal":false,"explicacao":"Normal: a lanterna do celular usa o flash, que fica na câmera."},{"id":5,"texto":"Permissão: ler seus contatos","sinal":true,"explicacao":"Uma lanterna não precisa saber quem são seus contatos."},{"id":6,"texto":"Permissão: ler e enviar SMS","sinal":true,"explicacao":"Acesso a SMS permite ler códigos de verificação de bancos e do WhatsApp."},{"id":7,"texto":"Ative a Acessibilidade para \"melhorar o desempenho\"","sinal":true,"explicacao":"Acessibilidade deixa o app ver a tela e tocar nela. É a permissão preferida dos golpes."},{"id":8,"texto":"Baixe a versão PRO pelo link: apk-lanterna.top","sinal":true,"explicacao":"Arquivo .apk fora da loja oficial não passa pelas verificações da loja."}],"gabarito":"Sinais de risco: trechos 2, 3, 5, 6, 7 e 8. Os trechos 1 e 4 são normais para um app de lanterna. Conclusão: não instale. E lembre que você chegou ao app por um link de mensagem, o que já é motivo para desconfiar."},"quiz":[{"pergunta":"Uma amiga pede pelo WhatsApp o código de 6 dígitos que chegou no seu celular por SMS. O que você faz?","opcoes":["Mando, porque é uma amiga","Mando só se ela explicar para que serve","Não mando e ligo para ela por outro canal","Mando e depois apago a conversa"],"correta":2,"explicacao":"O código serve para registrar a sua conta em outro aparelho. Quem pede provavelmente já clonou a conta da sua amiga. Ligue para ela e avise."},{"pergunta":"Qual é o lugar mais seguro para baixar um aplicativo?","opcoes":["Um link enviado pelo WhatsApp","A loja oficial do celular (Google Play ou App Store)","Um site que oferece a versão PRO de graça","Um arquivo .apk enviado por e-mail"],"correta":1,"explicacao":"As lojas oficiais verificam os apps antes de publicar. Não é garantia total, por isso também confira o desenvolvedor e as avaliações."},{"pergunta":"Um app de edição de fotos pede acesso aos seus contatos e às suas mensagens SMS. O que isso indica?","opcoes":["É normal, todo app precisa disso","Melhora a qualidade das fotos","É obrigatório pela LGPD","Pedido suspeito: as permissões não combinam com a função do app"],"correta":3,"explicacao":"Cada permissão precisa fazer sentido para o que o app faz. Um editor de fotos precisa das fotos, não dos seus contatos nem dos seus SMS."},{"pergunta":"O que é a verificação em duas etapas?","opcoes":["Digitar a senha duas vezes","Uma segunda proteção, além da senha, para entrar na conta","Um antivírus pago","Um tipo de backup"],"correta":1,"explicacao":"Com ela, mesmo que alguém descubra sua senha ou o código do SMS, ainda precisa de uma segunda confirmação. No WhatsApp, é um PIN de 6 dígitos criado por você."},{"pergunta":"Pela LGPD, você pode pedir a uma empresa dona de um aplicativo:","opcoes":["Para saber quais dados pessoais ela tem sobre você","Nada, pois aceitou os termos de uso","Apenas para cancelar a conta","Somente informações sobre o preço do app"],"correta":0,"explicacao":"A LGPD (art. 18) garante, entre outros direitos, confirmar se seus dados são tratados, acessá-los, corrigi-los, saber com quem foram compartilhados e revogar o consentimento."}],"checklist":{"titulo":"Antes de instalar um aplicativo...","itens":["Estou baixando pela loja oficial do celular, não por link de mensagem ou arquivo .apk.","Conferi o nome do desenvolvedor, o número de downloads e se as avaliações parecem reais.","Cada permissão pedida faz sentido para o que o app faz.","O app não pede acessibilidade ou acesso remoto sem um motivo claro.","Li a seção de privacidade da loja e sei quais dados o app coleta.","Vou criar uma senha nova, que não uso em nenhum outro app.","Vou ativar a verificação em duas etapas, se o app oferecer.","Meu celular e meus apps estão com as atualizações em dia."],"rodape":"Respondeu \"não\" a algum item? Pare e pense antes de instalar. Na dúvida, não instale.","recebendo":"Já instalado? Revise as permissões de tempos em tempos e desinstale os apps que você não usa mais."},"socorro":["Instalou um app suspeito? Desinstale imediatamente e faça uma verificação de segurança (no Android, o Google Play Protect, dentro da Play Store). Evite usar apps de banco nesse celular até ter certeza de que ele está limpo.","Troque as senhas das contas importantes (e-mail, banco, redes sociais) usando outro aparelho, e ative a verificação em duas etapas.","Se o app teve acesso à tela (acessibilidade) ou ao SMS, avise o seu banco pelo canal oficial.","WhatsApp clonado? Reinstale o app, entre de novo com o seu número, ative a confirmação em duas etapas e avise seus contatos.","Denuncie o app falso na loja e registre um boletim de ocorrência se houve prejuízo — muitos estados permitem fazer pela internet.","Seus dados foram usados de forma indevida por uma empresa? Peça explicações a ela (art. 18 da LGPD) e, se não for atendido, reclame na ANPD, a Autoridade Nacional de Proteção de Dados."],"dadosInfografico":[["153 mil","reclamações do golpe do WhatsApp em 2024"],["105 mil","reclamações de falsa central, que pede apps de acesso remoto"],["523 mil","casos nos 10 golpes mais aplicados"]],"fontes":[{"ref":"CERT.br / NIC.br. Cartilha de Segurança para Internet: fascículo Dispositivos móveis — mobilidade com segurança. São Paulo: NIC.br, 2017.","url":"https://nic.br/media/docs/publicacoes/13/fasciculo-dispositivos-moveis.pdf"},{"ref":"BRASIL. Lei nº 13.709, de 14 de agosto de 2018. Lei Geral de Proteção de Dados Pessoais (LGPD).","url":"https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm"},{"ref":"TRIBUNAL REGIONAL DO TRABALHO DA 15ª REGIÃO. LGPD: direitos do titular.","url":"https://trt15.jus.br/legislacao/lei-geral-de-protecao-de-dados-pessoais/direitos-do-titular"},{"ref":"IDEC. PixRevolution, Venom e GoPix: entenda os novos malwares que alteram transferências. 23 mar. 2026.","url":"https://idec.org.br/dicas-e-direitos/pixrevolution-venom-e-gopix-entenda-os-novos-malwares-que-alteram-transferencias-e"},{"ref":"SPADONI, Pedro. Novo golpe do INSS: aplicativo falso rouba senhas e dados bancários. Olhar Digital, 13 mar. 2026.","url":"https://olhardigital.com.br/2026/03/13/seguranca/novo-golpe-do-inss-aplicativo-falso-rouba-senhas-e-dados-bancarios/"},{"ref":"PODER360. Golpes por WhatsApp foram os mais aplicados em 2024; leia ranking [dados da Febraban]. 2025.","url":"https://www.poder360.com.br/poder-justica/golpes-por-whatsapp-foram-os-mais-aplicados-em-2024-leia-ranking/"},{"ref":"MACMAGAZINE. Google Play libera rótulos de privacidade de apps. 26 abr. 2022.","url":"https://macmagazine.com.br/post/2022/04/26/google-play-libera-rotulos-de-privacidade-de-apps/"}]};
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+$("#facts").innerHTML = C.dadosInfografico.map(d => `<div><b>${d[0]}</b><span>${esc(d[1])}</span></div>`).join("") + `<small>Fonte: Febraban, golpes mais relatados por clientes bancários em 2024.</small>`;
+
+const secs = [
+  ["golpes","5 riscos"],["caso","Caso prático"],["desafio","Desafio"],
+  ["quiz","Quiz"],["checklist","Checklist"],["infografico","Infográfico"],["socorro","Se der problema"]
+];
+$("#nav").innerHTML = secs.map(([id,n],i) => `<button role="tab" id="tab-${id}" data-tab="${id}" aria-controls="${id}" aria-selected="false"><span>${i<6?i+1:"!"}</span>${n}</button>`).join("");
+
+let h = "";
+
+// 2 Golpes
+h += `<section id="golpes"><div class="wrap">
+<div class="head"><p class="eyebrow">Texto</p><h2>${esc(C.texto.titulo)}</h2><p class="muted">${esc(C.texto.intro)}</p></div>
+<div class="golpes">${C.texto.golpes.map((g,i) => `<details class="golpe"${i===0?" open":""}><summary><h3>${esc(g.nome)}</h3></summary>
+<div class="body"><p>${esc(g.como)}</p>
+<div class="alertbox"><span class="tag">Sinal de alerta</span>${esc(g.sinal)}</div>
+<div class="okbox"><span class="tag">Como se proteger</span>${esc(g.protecao)}</div></div></details>`).join("")}</div>
+<p class="rule">${esc(C.texto.fechamento)}</p>
+</div></section>`;
+
+// 3 Caso
+h += `<section id="caso"><div class="wrap">
+<div class="head"><p class="eyebrow">Caso prático</p><h2>${esc(C.caso.titulo)}</h2><p>${esc(C.caso.contexto)}</p></div>
+<div class="chat" aria-label="Conversa de WhatsApp">${C.caso.mensagens.map(m=>`<div class="bub">${esc(m.texto)}<time>${m.hora}</time></div>`).join("")}</div>
+<div><h3>Antes de continuar, pense:</h3><ol class="qs" style="margin-top:.5rem">${C.caso.perguntas.map(q=>`<li>${esc(q)}</li>`).join("")}</ol></div>
+<div><button class="btn" id="revealCase" aria-expanded="false">Ver a análise</button></div>
+<div id="caseAnswer" hidden>
+  <div class="analysis">${C.caso.analise.map(a=>`<div><b>${esc(a[0])}</b><span>${esc(a[1])}</span></div>`).join("")}</div>
+  <div class="okbox" style="margin-top:1rem"><span class="tag">O que Seu Antônio deve fazer</span><ol class="qs">${C.caso.conduta.map(c=>`<li>${esc(c)}</li>`).join("")}</ol></div>
+</div>
+</div></section>`;
+
+// 4 Desafio
+h += `<section id="desafio"><div class="wrap">
+<div class="head"><p class="eyebrow">Desafio</p><h2>${esc(C.desafio.titulo)}</h2><p>${esc(C.desafio.instrucao)} Toque nos trechos suspeitos.</p></div>
+<div class="sms"><span class="from">Página do app · aberta por um link recebido no WhatsApp</span>${C.desafio.trechos.map(t=>`<button class="piece" data-id="${t.id}" aria-pressed="false">${esc(t.texto)}</button>`).join(" ")}</div>
+<div class="bar"><span class="counter" id="dcount">0 marcados</span><button class="btn" id="dcheck">Conferir</button><button class="btn ghost" id="dreset">Recomeçar</button></div>
+<div class="feedback" id="dfeed" hidden></div>
+</div></section>`;
+
+// 5 Quiz
+h += `<section id="quiz"><div class="wrap">
+<div class="head"><p class="eyebrow">Quiz</p><h2>Teste o que você aprendeu</h2><p class="muted">5 perguntas. Você vê a explicação logo depois de responder.</p></div>
+<div class="quiz" id="quizBox" aria-live="polite"></div>
+</div></section>`;
+
+// 6 Checklist
+h += `<section id="checklist"><div class="wrap">
+<div class="head"><p class="eyebrow">Checklist</p><h2>${esc(C.checklist.titulo)}</h2><p class="muted">Use antes de instalar qualquer app. Só instale se puder marcar todos os itens.</p></div>
+<ul class="checks">${C.checklist.itens.map((t,i)=>`<li><label for="ck${i}"><input type="checkbox" id="ck${i}"><span>${esc(t)}</span></label></li>`).join("")}</ul>
+<div class="meter"><i id="meter"></i></div>
+<p class="verdict" id="verdict"></p>
+<div class="alertbox"><span class="tag">Vai receber?</span>${esc(C.checklist.recebendo)}</div>
+</div></section>`;
+
+// 7 Infográfico
+h += `<section id="infografico"><div class="wrap">
+<div class="head"><p class="eyebrow">Infográfico</p><h2>Apps seguros em uma página</h2><p class="muted">Resumo para imprimir e compartilhar. A versão em PDF e imagem é distribuída junto com o material do projeto.</p></div>
+<div class="info">
+  <div class="ih"><p class="eyebrow">Infográfico</p><h3>Apps seguros: Baixe certo, Permita pouco, Proteja a conta</h3></div>
+  <div class="grid">${C.dadosInfografico.map(d=>`<div><div class="num">${d[0]}</div><div style="font-size:.88rem">${esc(d[1])}</div></div>`).join("")}</div>
+  <div class="row"><b>Os 5 riscos mais comuns</b><ul class="mini">${C.texto.golpes.map(g=>`<li><b>${esc(g.nome.replace(/^\d\.\s*/,"").replace(/\s*\(.*\)$/,""))}:</b> ${esc(g.sinal)}</li>`).join("")}</ul></div>
+  <div class="row"><b>Três regras</b><div class="pcp">
+    <div><b>Baixe certo</b>Só pela loja oficial. Nunca por link de mensagem ou arquivo .apk.</div>
+    <div><b>Permita pouco</b>Cada permissão precisa fazer sentido. Acessibilidade só com motivo claro.</div>
+    <div><b>Proteja a conta</b>Senha diferente em cada app, verificação em duas etapas e celular atualizado.</div></div></div>
+  <div class="row"><b>Instalou um app suspeito?</b><ul class="mini"><li>Desinstale e faça uma verificação de segurança.</li><li>Troque as senhas por outro aparelho e avise o banco.</li><li>Pela LGPD, você pode pedir a uma empresa quais dados ela tem sobre você.</li></ul>
+  <p class="muted" style="font-size:.8rem">Fontes: CERT.br, LGPD (Lei 13.709/2018), Idec e Febraban.</p></div>
+</div>
+</div></section>`;
+
+// Socorro
+h += `<section id="socorro"><div class="wrap">
+<div class="head"><p class="eyebrow">Se acontecer</p><h2>Instalei um app suspeito. E agora?</h2><p class="muted">Sem vergonha: golpistas enganam pessoas de todas as idades. O que importa é agir rápido.</p></div>
+<ol class="help">${C.socorro.map(s=>`<li>${esc(s)}</li>`).join("")}</ol>
+</div></section>`;
+
+$("#main").innerHTML = h;
+
+// Abas
+const sections = [...document.querySelectorAll("#main > section")];
+sections.forEach((sec,i) => {
+  sec.setAttribute("role","tabpanel");
+  sec.setAttribute("aria-labelledby","tab-"+sec.id);
+  const hd = sec.querySelector(".head"); if (hd) hd.dataset.n = i<6 ? String(i+1) : "!";
+});
+const tabs = [...document.querySelectorAll("#nav [role=tab]")];
+function showTab(id, focus){
+  if (!sections.some(s => s.id === id)) id = sections[0].id;
+  sections.forEach(s => { s.hidden = s.id !== id; });
+  tabs.forEach(t => { const on = t.dataset.tab === id; t.setAttribute("aria-selected", String(on)); t.tabIndex = on ? 0 : -1; if (on && focus) t.focus(); });
+  const cur = tabs.find(t => t.dataset.tab === id); if (cur) cur.scrollIntoView({block:"nearest", inline:"nearest"});
+  try { history.replaceState(null, "", "#" + id); } catch (e) {}
+}
+tabs.forEach((t,i) => {
+  t.onclick = () => { showTab(t.dataset.tab); const nav = document.querySelector("nav.steps"); if (nav.getBoundingClientRect().top < 0 || window.scrollY > nav.offsetTop) window.scrollTo({top: nav.offsetTop, behavior: "smooth"}); };
+  t.onkeydown = e => {
+    if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); const n = tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length]; showTab(n.dataset.tab, true); }
+  };
+});
+showTab((location.hash || "").slice(1));
+
+$("#foot").innerHTML = `<h3 style="margin-bottom:.8rem">Identificação</h3>
+<div class="idgrid">${C.identificacao.map(([a,b])=>`<div><span>${esc(a)}:</span> ${esc(b)}</div>`).join("")}</div>
+<h3 style="margin:1.8rem 0 .8rem">Fontes</h3>
+<ol class="sources">${C.fontes.map(f=>`<li>${esc(f.ref)} <a href="${f.url}" target="_blank" rel="noopener">${esc(f.url)}</a></li>`).join("")}</ol>`;
+
+// Caso reveal
+$("#revealCase").onclick = e => { const a = $("#caseAnswer"); a.hidden = !a.hidden; e.target.setAttribute("aria-expanded", String(!a.hidden)); e.target.textContent = a.hidden ? "Ver a análise" : "Esconder a análise"; };
+
+// Desafio
+const pieces = [...document.querySelectorAll(".piece")];
+const total = C.desafio.trechos.filter(t=>t.sinal).length;
+const updCount = () => { const n = pieces.filter(p=>p.getAttribute("aria-pressed")==="true").length; $("#dcount").textContent = `${n} marcado${n===1?"":"s"} · procure ${total}`; };
+pieces.forEach(p => p.onclick = () => { if (p.disabled) return; p.setAttribute("aria-pressed", p.getAttribute("aria-pressed")==="true"?"false":"true"); updCount(); });
+updCount();
+$("#dcheck").onclick = () => {
+  let hits = 0, fp = 0;
+  pieces.forEach(p => {
+    const t = C.desafio.trechos.find(x=>x.id==p.dataset.id), on = p.getAttribute("aria-pressed")==="true";
+    p.disabled = true;
+    if (t.sinal && on) { hits++; p.classList.add("right"); }
+    else if (t.sinal && !on) p.classList.add("miss");
+    else if (!t.sinal && on) { fp++; p.classList.add("wrong"); }
+  });
+  const f = $("#dfeed"); f.hidden = false;
+  f.innerHTML = `<p style="border-color:var(--brand)"><b>${hits}/${total}</b>${hits===total&&fp===0?"Perfeito! Você encontrou todos os sinais.":hits===total?"Você achou todos os sinais, mas marcou informações que são normais para esse tipo de app.":"Os sinais que faltaram estão com contorno tracejado."}</p>` +
+    C.desafio.trechos.map(t=>`<p><b>${t.id}</b>${t.sinal?"🚩 ":""}“${esc(t.texto)}” — ${esc(t.explicacao)}</p>`).join("") + `<p class="muted">${esc(C.desafio.gabarito)}</p>`;
+};
+$("#dreset").onclick = () => { pieces.forEach(p=>{p.disabled=false;p.className="piece";p.setAttribute("aria-pressed","false")}); $("#dfeed").hidden = true; updCount(); };
+
+// Quiz
+let qi = 0, res = [];
+function renderQuiz(){
+  const box = $("#quizBox");
+  const prog = `<div class="prog">${C.quiz.map((_,i)=>`<i class="${res[i]===true?"done":res[i]===false?"bad":""}"></i>`).join("")}</div>`;
+  if (qi >= C.quiz.length) {
+    const s = res.filter(Boolean).length;
+    box.innerHTML = prog + `<div><span class="score">${s}/5</span><p>${s===5?"Excelente! Você sabe usar aplicativos com segurança.":s>=3?"Bom resultado. Revise as explicações das que errou.":"Vale reler os 5 riscos e tentar de novo."}</p></div><div><button class="btn" id="qagain">Refazer o quiz</button></div>`;
+    $("#qagain").onclick = () => { qi = 0; res = []; renderQuiz(); };
+    return;
+  }
+  const q = C.quiz[qi];
+  box.innerHTML = prog + `<p class="eyebrow">Pergunta ${qi+1} de 5</p><h3>${esc(q.pergunta)}</h3>
+  <div class="opts">${q.opcoes.map((o,j)=>`<button class="opt" data-j="${j}">${"ABCD"[j]}) ${esc(o)}</button>`).join("")}</div><div id="qx"></div>`;
+  box.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+    const j = +b.dataset.j, ok = j === q.correta; res[qi] = ok;
+    box.querySelectorAll(".opt").forEach(x => { x.disabled = true; if (+x.dataset.j === q.correta) x.classList.add("ok"); });
+    if (!ok) b.classList.add("no");
+    $("#qx").innerHTML = `<div class="explain"><b>${ok?"Isso mesmo.":"Não é essa."}</b> ${esc(q.explicacao)}</div><div style="margin-top:.8rem"><button class="btn" id="qnext">${qi===4?"Ver resultado":"Próxima pergunta"}</button></div>`;
+    $("#qnext").onclick = () => { qi++; renderQuiz(); };
+  });
+}
+renderQuiz();
+
+// Checklist
+const cks = [...document.querySelectorAll(".checks input")];
+const updChecks = () => {
+  const n = cks.filter(c=>c.checked).length;
+  $("#meter").style.width = (n/cks.length*100)+"%";
+  $("#verdict").textContent = n===cks.length ? "Tudo certo: pode instalar com mais segurança." : `${n} de ${cks.length} itens confirmados. ${C.checklist.rodape}`;
+  $("#verdict").style.color = n===cks.length ? "var(--brand)" : "var(--ink)";
+};
+cks.forEach(c => c.onchange = updChecks); updChecks();
+</script>
+</body>
+</html>
